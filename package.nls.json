@@ -1,0 +1,4 @@
+{
+	"displayName": "OIL",
+	"description": "Provides syntax highlighting for OIL (OSEK Implementation Language), it supports *.chx, *.tpl, *.oil, *.tpx, *.obx, *.stx file extensions"
+}

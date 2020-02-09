@@ -1,0 +1,856 @@
+{
+    "information_for_contributors": [
+        "Author: EhabHelaly",
+        "This syntax is based on c.tmlanguage.json -> https://github.com/jeff-hykin/cpp-textmate-grammar/blob/master//syntaxes/c.tmLanguage.json"
+    ],
+    "version": "1.0",
+    "name": "OIL",
+    "scopeName": "source.oil",
+    "patterns": [
+        {
+            "include": "#comments"
+        },
+        {
+            "match": "\\b(AS|CONCATE|WHERE|AUTO|INTO|PURPOSE|READ|WRITE|ONEPERLINE|WITH_AUTO|REWRITABLE|ADD_ON|Extract|INFO)\\b",
+            "name": "keyword.control.oil"
+        },
+        {
+            "match": "\\b(ENUM|BOOLEAN)\\b",
+            "name": "storage.type.oil"
+        },
+        {
+            "match": "\\b(FILE|TPL|TRADOIL|IMPLEMENTATION|CPU|INT|ISR|TASK|OS|APPMODE|COUNTER)\\b",
+            "name": "storage.modifier.oil"
+        },
+        {
+            "match": "\\b(TRUE|FALSE)\\b",
+            "name": "constant.language.oil"
+        },
+        {
+            "include": "#operators"
+        },
+        {
+            "include": "#numbers"
+        },
+        {
+            "include": "#strings"
+        },
+        {
+            "match": "(?x) \\b\n(UINT8|UINT16|UINT32|UINT64|STRING|FLOAT)\n\\b",
+            "name": "support.type.stdint.oil"
+        },
+        {
+            "match": ";",
+            "name": "punctuation.terminator.statement.oil"
+        },
+        {
+            "match": ",",
+            "name": "punctuation.separator.delimiter.oil"
+        },
+        {
+            "begin": "^\\s*((#)\\s*(include(?:_next)?|import))\\b\\s*",
+            "beginCaptures": {
+                "1": {
+                    "name": "keyword.control.directive.$3.oil"
+                },
+                "2": {
+                    "name": "punctuation.definition.directive.oil"
+                }
+            },
+            "end": "(?=(?://|/\\*))|(?<!\\\\)(?=\\n)",
+            "name": "meta.preprocessor.include.oil",
+            "patterns": [
+                {
+                    "include": "#line_continuation_character"
+                },
+                {
+                    "begin": "\"",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.oil"
+                        }
+                    },
+                    "end": "\"",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.oil"
+                        }
+                    },
+                    "name": "string.quoted.double.include.oil"
+                },
+                {
+                    "begin": "<",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.oil"
+                        }
+                    },
+                    "end": ">",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.oil"
+                        }
+                    },
+                    "name": "string.quoted.other.lt-gt.include.oil"
+                }
+            ]
+        },
+        {
+            "match": "^\\s+*(\\w+)\\s+(\\w+)+({)*",
+            "captures": {
+                "1": {
+                    "name": "entity.name.type.oil"
+                },
+                "2": {
+                    "name": "variable.object.oil"
+                },
+                "3": {
+                    "name": "punctuation.section.block.begin.bracket.curly.oil"
+                }
+            }
+        },
+        {
+            "include": "#block"
+        },
+        {
+            "include": "#parens"
+        }
+    ],
+    "repository": {
+        "inline_comment": {
+            "match": "(\\/\\*)((?>(?:[^\\*]|(?>\\*+)[^\\/])*)((?>\\*+)\\/))",
+            "captures": {
+                "1": {
+                    "name": "comment.block.oil punctuation.definition.comment.begin.oil"
+                },
+                "2": {
+                    "name": "comment.block.oil"
+                },
+                "3": {
+                    "patterns": [
+                        {
+                            "match": "\\*\\/",
+                            "name": "comment.block.oil punctuation.definition.comment.end.oil"
+                        },
+                        {
+                            "match": "\\*",
+                            "name": "comment.block.oil"
+                        }
+                    ]
+                }
+            }
+        },
+        "backslash_escapes": {
+            "match": "(?x)\\\\ (\n\\\\\t\t\t |\n[abefnprtv'\"?]   |\n[0-3]\\d{,2}\t |\n[4-7]\\d?\t\t|\nx[a-fA-F0-9]{,2} |\nu[a-fA-F0-9]{,4} |\nU[a-fA-F0-9]{,8} )",
+            "name": "constant.character.escape.oil"
+        },
+        "numbers": {
+            "match": "(?<!\\w)\\.?\\d(?:(?:[0-9a-zA-Z_\\.]|')|(?<=[eEpP])[+-])*",
+            "captures": {
+                "0": {
+                    "patterns": [
+                        {
+                            "begin": "(?=.)",
+                            "end": "$",
+                            "patterns": [
+                                {
+                                    "match": "(\\G0[xX])([0-9a-fA-F](?:[0-9a-fA-F]|((?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)?((?:(?<=[0-9a-fA-F])\\.|\\.(?=[0-9a-fA-F])))([0-9a-fA-F](?:[0-9a-fA-F]|((?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)?((?<!')([pP])(\\+?)(\\-?)((?:[0-9](?:[0-9]|(?:(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)))?([lLfF](?!\\w))?$",
+                                    "captures": {
+                                        "1": {
+                                            "name": "keyword.other.unit.hexadecimal.oil"
+                                        },
+                                        "2": {
+                                            "name": "constant.numeric.hexadecimal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "3": {
+                                            "name": "punctuation.separator.constant.numeric"
+                                        },
+                                        "4": {
+                                            "name": "constant.numeric.hexadecimal.oil"
+                                        },
+                                        "5": {
+                                            "name": "constant.numeric.hexadecimal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "6": {
+                                            "name": "punctuation.separator.constant.numeric"
+                                        },
+                                        "8": {
+                                            "name": "keyword.other.unit.exponent.hexadecimal.oil"
+                                        },
+                                        "9": {
+                                            "name": "keyword.operator.plus.exponent.hexadecimal.oil"
+                                        },
+                                        "10": {
+                                            "name": "keyword.operator.minus.exponent.hexadecimal.oil"
+                                        },
+                                        "11": {
+                                            "name": "constant.numeric.exponent.hexadecimal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "12": {
+                                            "name": "keyword.other.unit.suffix.floating-point.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "(\\G(?=[0-9.])(?!0[xXbB]))([0-9](?:[0-9]|((?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)?((?:(?<=[0-9])\\.|\\.(?=[0-9])))([0-9](?:[0-9]|((?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)?((?<!')([eE])(\\+?)(\\-?)((?:[0-9](?:[0-9]|(?:(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)))?([lLfF](?!\\w))?$",
+                                    "captures": {
+                                        "2": {
+                                            "name": "constant.numeric.decimal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "3": {
+                                            "name": "punctuation.separator.constant.numeric"
+                                        },
+                                        "4": {
+                                            "name": "constant.numeric.decimal.point.oil"
+                                        },
+                                        "5": {
+                                            "name": "constant.numeric.decimal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "6": {
+                                            "name": "punctuation.separator.constant.numeric"
+                                        },
+                                        "8": {
+                                            "name": "keyword.other.unit.exponent.decimal.oil"
+                                        },
+                                        "9": {
+                                            "name": "keyword.operator.plus.exponent.decimal.oil"
+                                        },
+                                        "10": {
+                                            "name": "keyword.operator.minus.exponent.decimal.oil"
+                                        },
+                                        "11": {
+                                            "name": "constant.numeric.exponent.decimal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "12": {
+                                            "name": "keyword.other.unit.suffix.floating-point.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "(\\G0[bB])([01](?:[01]|((?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)((?:(?:(?:(?:(?:[uU]|[uU]ll?)|[uU]LL?)|ll?[uU]?)|LL?[uU]?)|[fF])(?!\\w))?$",
+                                    "captures": {
+                                        "1": {
+                                            "name": "keyword.other.unit.binary.oil"
+                                        },
+                                        "2": {
+                                            "name": "constant.numeric.binary.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "3": {
+                                            "name": "punctuation.separator.constant.numeric"
+                                        },
+                                        "4": {
+                                            "name": "keyword.other.unit.suffix.integer.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "(\\G0)((?:[0-7]|((?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))+)((?:(?:(?:(?:(?:[uU]|[uU]ll?)|[uU]LL?)|ll?[uU]?)|LL?[uU]?)|[fF])(?!\\w))?$",
+                                    "captures": {
+                                        "1": {
+                                            "name": "keyword.other.unit.octal.oil"
+                                        },
+                                        "2": {
+                                            "name": "constant.numeric.octal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "3": {
+                                            "name": "punctuation.separator.constant.numeric"
+                                        },
+                                        "4": {
+                                            "name": "keyword.other.unit.suffix.integer.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "(\\G0[xX])([0-9a-fA-F](?:[0-9a-fA-F]|((?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)((?<!')([pP])(\\+?)(\\-?)((?:[0-9](?:[0-9]|(?:(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)))?((?:(?:(?:(?:(?:[uU]|[uU]ll?)|[uU]LL?)|ll?[uU]?)|LL?[uU]?)|[fF])(?!\\w))?$",
+                                    "captures": {
+                                        "1": {
+                                            "name": "keyword.other.unit.hexadecimal.oil"
+                                        },
+                                        "2": {
+                                            "name": "constant.numeric.hexadecimal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "3": {
+                                            "name": "punctuation.separator.constant.numeric"
+                                        },
+                                        "5": {
+                                            "name": "keyword.other.unit.exponent.hexadecimal.oil"
+                                        },
+                                        "6": {
+                                            "name": "keyword.operator.plus.exponent.hexadecimal.oil"
+                                        },
+                                        "7": {
+                                            "name": "keyword.operator.minus.exponent.hexadecimal.oil"
+                                        },
+                                        "8": {
+                                            "name": "constant.numeric.exponent.hexadecimal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "9": {
+                                            "name": "keyword.other.unit.suffix.integer.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "(\\G(?=[0-9.])(?!0[xXbB]))([0-9](?:[0-9]|((?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)((?<!')([eE])(\\+?)(\\-?)((?:[0-9](?:[0-9]|(?:(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])))*)))?((?:(?:(?:(?:(?:[uU]|[uU]ll?)|[uU]LL?)|ll?[uU]?)|LL?[uU]?)|[fF])(?!\\w))?$",
+                                    "captures": {
+                                        "2": {
+                                            "name": "constant.numeric.decimal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "3": {
+                                            "name": "punctuation.separator.constant.numeric"
+                                        },
+                                        "5": {
+                                            "name": "keyword.other.unit.exponent.decimal.oil"
+                                        },
+                                        "6": {
+                                            "name": "keyword.operator.plus.exponent.decimal.oil"
+                                        },
+                                        "7": {
+                                            "name": "keyword.operator.minus.exponent.decimal.oil"
+                                        },
+                                        "8": {
+                                            "name": "constant.numeric.exponent.decimal.oil",
+                                            "patterns": [
+                                                {
+                                                    "match": "(?<=[0-9a-fA-F])'(?=[0-9a-fA-F])",
+                                                    "name": "punctuation.separator.constant.numeric"
+                                                }
+                                            ]
+                                        },
+                                        "9": {
+                                            "name": "keyword.other.unit.suffix.integer.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "(?:(?:[0-9a-zA-Z_\\.]|')|(?<=[eEpP])[+-])+",
+                                    "name": "invalid.illegal.constant.numeric"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        "comments": {
+            "patterns": [
+                {
+                    "match": "(?:^)(?>\\s*)(\\/\\/[!\\/]+)(.*)",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.documentation.oil"
+                        },
+                        "2": {
+                            "patterns": [
+                                {
+                                    "match": "(?<=[\\s*!\\/])[\\\\@](?:callergraph|callgraph|else|endif|f\\$|f\\[|f\\]|hidecallergraph|hidecallgraph|hiderefby|hiderefs|hideinitializer|htmlinclude|n|nosubgrouping|private|privatesection|protected|protectedsection|public|publicsection|pure|showinitializer|showrefby|showrefs|tableofcontents|\\$|\\#|<|>|%|\"|\\.|=|::|\\||\\-\\-|\\-\\-\\-)\\b(?:\\{[^}]*\\})?",
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                {
+                                    "match": "((?<=[\\s*!\\/])[\\\\@](?:a|em|e))\\s+(\\S+)",
+                                    "captures": {
+                                        "1": {
+                                            "name": "storage.type.class.doxygen.oil"
+                                        },
+                                        "2": {
+                                            "name": "markup.italic.doxygen.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "((?<=[\\s*!\\/])[\\\\@]b)\\s+(\\S+)",
+                                    "captures": {
+                                        "1": {
+                                            "name": "storage.type.class.doxygen.oil"
+                                        },
+                                        "2": {
+                                            "name": "markup.bold.doxygen.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "((?<=[\\s*!\\/])[\\\\@](?:c|p))\\s+(\\S+)",
+                                    "captures": {
+                                        "1": {
+                                            "name": "storage.type.class.doxygen.oil"
+                                        },
+                                        "2": {
+                                            "name": "markup.inline.raw.string.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "(?<=[\\s*!\\/])[\\\\@](?:a|anchor|b|c|cite|copybrief|copydetail|copydoc|def|dir|dontinclude|e|em|emoji|enum|example|extends|file|idlexcept|implements|include|includedoc|includelineno|latexinclude|link|memberof|namespace|p|package|ref|refitem|related|relates|relatedalso|relatesalso|verbinclude)\\b(?:\\{[^}]*\\})?",
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                {
+                                    "match": "(?<=[\\s*!\\/])[\\\\@](?:addindex|addtogroup|category|class|defgroup|diafile|dotfile|elseif|fn|headerfile|if|ifnot|image|ingroup|interface|line|mainpage|mscfile|name|overload|page|property|protocol|section|skip|skipline|snippet|snippetdoc|snippetlineno|struct|subpage|subsection|subsubsection|typedef|union|until|vhdlflow|weakgroup)\\b(?:\\{[^}]*\\})?",
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                {
+                                    "match": "((?<=[\\s*!\\/])[\\\\@]param)\\s+(\\b\\w+\\b)",
+                                    "captures": {
+                                        "1": {
+                                            "name": "storage.type.class.doxygen.oil"
+                                        },
+                                        "2": {
+                                            "name": "variable.parameter.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "(?<=[\\s*!\\/])[\\\\@](?:arg|attention|author|authors|brief|bug|copyright|date|deprecated|details|exception|invariant|li|note|par|paragraph|param|post|pre|remark|remarks|result|return|returns|retval|sa|see|short|since|test|throw|todo|tparam|version|warning|xrefitem)\\b(?:\\{[^}]*\\})?",
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                {
+                                    "match": "(?<=[\\s*!\\/])[\\\\@](?:code|cond|docbookonly|dot|htmlonly|internal|latexonly|link|manonly|msc|parblock|rtfonly|secreflist|uml|verbatim|xmlonly|endcode|endcond|enddocbookonly|enddot|endhtmlonly|endinternal|endlatexonly|endlink|endmanonly|endmsc|endparblock|endrtfonly|endsecreflist|enduml|endverbatim|endxmlonly)\\b(?:\\{[^}]*\\})?",
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                {
+                                    "match": "(?:\\b[A-Z]+:|@[a-z_]+:)",
+                                    "name": "storage.type.class.gtkdoc"
+                                },
+                                {
+                                    "match": "[\\\\@]\\S++(?!(?:\\n|$))",
+                                    "name": "invalid.unknown.documentation.command.oil"
+                                }
+                            ]
+                        }
+                    },
+                    "name": "comment.line.double-slash.documentation.oil"
+                },
+                {
+                    "match": "(\\/\\*[!*]+(?=\\s))(.+)([!*]*\\*\\/)",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.begin.documentation.oil"
+                        },
+                        "2": {
+                            "patterns": [
+                                {
+                                    "match": "(?<=[\\s*!\\/])[\\\\@](?:callergraph|callgraph|else|endif|f\\$|f\\[|f\\]|hidecallergraph|hidecallgraph|hiderefby|hiderefs|hideinitializer|htmlinclude|n|nosubgrouping|private|privatesection|protected|protectedsection|public|publicsection|pure|showinitializer|showrefby|showrefs|tableofcontents|\\$|\\#|<|>|%|\"|\\.|=|::|\\||\\-\\-|\\-\\-\\-)\\b(?:\\{[^}]*\\})?",
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                {
+                                    "match": "((?<=[\\s*!\\/])[\\\\@](?:a|em|e))\\s+(\\S+)",
+                                    "captures": {
+                                        "1": {
+                                            "name": "storage.type.class.doxygen.oil"
+                                        },
+                                        "2": {
+                                            "name": "markup.italic.doxygen.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "((?<=[\\s*!\\/])[\\\\@]b)\\s+(\\S+)",
+                                    "captures": {
+                                        "1": {
+                                            "name": "storage.type.class.doxygen.oil"
+                                        },
+                                        "2": {
+                                            "name": "markup.bold.doxygen.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "((?<=[\\s*!\\/])[\\\\@](?:c|p))\\s+(\\S+)",
+                                    "captures": {
+                                        "1": {
+                                            "name": "storage.type.class.doxygen.oil"
+                                        },
+                                        "2": {
+                                            "name": "markup.inline.raw.string.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "(?<=[\\s*!\\/])[\\\\@](?:a|anchor|b|c|cite|copybrief|copydetail|copydoc|def|dir|dontinclude|e|em|emoji|enum|example|extends|file|idlexcept|implements|include|includedoc|includelineno|latexinclude|link|memberof|namespace|p|package|ref|refitem|related|relates|relatedalso|relatesalso|verbinclude)\\b(?:\\{[^}]*\\})?",
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                {
+                                    "match": "(?<=[\\s*!\\/])[\\\\@](?:addindex|addtogroup|category|class|defgroup|diafile|dotfile|elseif|fn|headerfile|if|ifnot|image|ingroup|interface|line|mainpage|mscfile|name|overload|page|property|protocol|section|skip|skipline|snippet|snippetdoc|snippetlineno|struct|subpage|subsection|subsubsection|typedef|union|until|vhdlflow|weakgroup)\\b(?:\\{[^}]*\\})?",
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                {
+                                    "match": "((?<=[\\s*!\\/])[\\\\@]param)\\s+(\\b\\w+\\b)",
+                                    "captures": {
+                                        "1": {
+                                            "name": "storage.type.class.doxygen.oil"
+                                        },
+                                        "2": {
+                                            "name": "variable.parameter.oil"
+                                        }
+                                    }
+                                },
+                                {
+                                    "match": "(?<=[\\s*!\\/])[\\\\@](?:arg|attention|author|authors|brief|bug|copyright|date|deprecated|details|exception|invariant|li|note|par|paragraph|param|post|pre|remark|remarks|result|return|returns|retval|sa|see|short|since|test|throw|todo|tparam|version|warning|xrefitem)\\b(?:\\{[^}]*\\})?",
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                {
+                                    "match": "(?<=[\\s*!\\/])[\\\\@](?:code|cond|docbookonly|dot|htmlonly|internal|latexonly|link|manonly|msc|parblock|rtfonly|secreflist|uml|verbatim|xmlonly|endcode|endcond|enddocbookonly|enddot|endhtmlonly|endinternal|endlatexonly|endlink|endmanonly|endmsc|endparblock|endrtfonly|endsecreflist|enduml|endverbatim|endxmlonly)\\b(?:\\{[^}]*\\})?",
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                {
+                                    "match": "(?:\\b[A-Z]+:|@[a-z_]+:)",
+                                    "name": "storage.type.class.gtkdoc"
+                                },
+                                {
+                                    "match": "[\\\\@]\\S++(?!(?:\\n|$))",
+                                    "name": "invalid.unknown.documentation.command.oil"
+                                }
+                            ]
+                        },
+                        "3": {
+                            "name": "punctuation.definition.comment.end.documentation.oil"
+                        }
+                    },
+                    "name": "comment.block.documentation.oil"
+                },
+                {
+                    "name": "comment.block.documentation.oil",
+                    "begin": "((?>\\s*)\\/\\*[!*]+(?:(?:\\n|$)|(?=\\s)))",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.begin.documentation.oil"
+                        }
+                    },
+                    "end": "([!*]*\\*\\/)",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.end.documentation.oil"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "match": "(?<=[\\s*!\\/])[\\\\@](?:callergraph|callgraph|else|endif|f\\$|f\\[|f\\]|hidecallergraph|hidecallgraph|hiderefby|hiderefs|hideinitializer|htmlinclude|n|nosubgrouping|private|privatesection|protected|protectedsection|public|publicsection|pure|showinitializer|showrefby|showrefs|tableofcontents|\\$|\\#|<|>|%|\"|\\.|=|::|\\||\\-\\-|\\-\\-\\-)\\b(?:\\{[^}]*\\})?",
+                            "name": "storage.type.class.doxygen.oil"
+                        },
+                        {
+                            "match": "((?<=[\\s*!\\/])[\\\\@](?:a|em|e))\\s+(\\S+)",
+                            "captures": {
+                                "1": {
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                "2": {
+                                    "name": "markup.italic.doxygen.oil"
+                                }
+                            }
+                        },
+                        {
+                            "match": "((?<=[\\s*!\\/])[\\\\@]b)\\s+(\\S+)",
+                            "captures": {
+                                "1": {
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                "2": {
+                                    "name": "markup.bold.doxygen.oil"
+                                }
+                            }
+                        },
+                        {
+                            "match": "((?<=[\\s*!\\/])[\\\\@](?:c|p))\\s+(\\S+)",
+                            "captures": {
+                                "1": {
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                "2": {
+                                    "name": "markup.inline.raw.string.oil"
+                                }
+                            }
+                        },
+                        {
+                            "match": "(?<=[\\s*!\\/])[\\\\@](?:a|anchor|b|c|cite|copybrief|copydetail|copydoc|def|dir|dontinclude|e|em|emoji|enum|example|extends|file|idlexcept|implements|include|includedoc|includelineno|latexinclude|link|memberof|namespace|p|package|ref|refitem|related|relates|relatedalso|relatesalso|verbinclude)\\b(?:\\{[^}]*\\})?",
+                            "name": "storage.type.class.doxygen.oil"
+                        },
+                        {
+                            "match": "(?<=[\\s*!\\/])[\\\\@](?:addindex|addtogroup|category|class|defgroup|diafile|dotfile|elseif|fn|headerfile|if|ifnot|image|ingroup|interface|line|mainpage|mscfile|name|overload|page|property|protocol|section|skip|skipline|snippet|snippetdoc|snippetlineno|struct|subpage|subsection|subsubsection|typedef|union|until|vhdlflow|weakgroup)\\b(?:\\{[^}]*\\})?",
+                            "name": "storage.type.class.doxygen.oil"
+                        },
+                        {
+                            "match": "((?<=[\\s*!\\/])[\\\\@]param)\\s+(\\b\\w+\\b)",
+                            "captures": {
+                                "1": {
+                                    "name": "storage.type.class.doxygen.oil"
+                                },
+                                "2": {
+                                    "name": "variable.parameter.oil"
+                                }
+                            }
+                        },
+                        {
+                            "match": "(?<=[\\s*!\\/])[\\\\@](?:arg|attention|author|authors|brief|bug|copyright|date|deprecated|details|exception|invariant|li|note|par|paragraph|param|post|pre|remark|remarks|result|return|returns|retval|sa|see|short|since|test|throw|todo|tparam|version|warning|xrefitem)\\b(?:\\{[^}]*\\})?",
+                            "name": "storage.type.class.doxygen.oil"
+                        },
+                        {
+                            "match": "(?<=[\\s*!\\/])[\\\\@](?:code|cond|docbookonly|dot|htmlonly|internal|latexonly|link|manonly|msc|parblock|rtfonly|secreflist|uml|verbatim|xmlonly|endcode|endcond|enddocbookonly|enddot|endhtmlonly|endinternal|endlatexonly|endlink|endmanonly|endmsc|endparblock|endrtfonly|endsecreflist|enduml|endverbatim|endxmlonly)\\b(?:\\{[^}]*\\})?",
+                            "name": "storage.type.class.doxygen.oil"
+                        },
+                        {
+                            "match": "(?:\\b[A-Z]+:|@[a-z_]+:)",
+                            "name": "storage.type.class.gtkdoc"
+                        },
+                        {
+                            "match": "[\\\\@]\\S++(?!(?:\\n|$))",
+                            "name": "invalid.unknown.documentation.command.oil"
+                        }
+                    ]
+                },
+                {
+                    "match": "^\\/\\* =(\\s*.*?)\\s*= \\*\\/$\\n?",
+                    "captures": {
+                        "1": {
+                            "name": "meta.toc-list.banner.block.oil"
+                        }
+                    },
+                    "name": "comment.block.banner.oil"
+                },
+                {
+                    "name": "comment.block.oil",
+                    "begin": "(\\/\\*)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.begin.oil"
+                        }
+                    },
+                    "end": "(\\*\\/)",
+                    "endCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.comment.end.oil"
+                        }
+                    }
+                },
+                {
+                    "match": "^\\/\\/ =(\\s*.*?)\\s*=$\\n?",
+                    "captures": {
+                        "1": {
+                            "name": "meta.toc-list.banner.line.oil"
+                        }
+                    },
+                    "name": "comment.line.banner.oil"
+                },
+                {
+                    "begin": "((?:^[ \\t]+)?)(?=\\/\\/)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.whitespace.comment.leading.oil"
+                        }
+                    },
+                    "end": "(?!\\G)",
+                    "patterns": [
+                        {
+                            "name": "comment.line.double-slash.oil",
+                            "begin": "(\\/\\/)",
+                            "beginCaptures": {
+                                "1": {
+                                    "name": "punctuation.definition.comment.oil"
+                                }
+                            },
+                            "end": "(?=\\n)"
+                        }
+                    ]
+                }
+            ]
+        },
+        "block":{
+            "patterns":[
+                {
+                    "name":"meta.block.oil",
+                     "begin":"{",
+                    "beginCaptures":{
+                        "0":{
+                            "name":"punctuation.section.block.begin.bracket.curly.oil"
+                        }
+                    },
+                    "end":"}|(?=\\s*#\\s*(?:elif|else|endif)\\b)",
+                    "endCaptures":{
+                        "0":{
+                            "name":"punctuation.section.block.end.bracket.curly.oil"
+                        }
+                    },
+                    "patterns":[
+                        {
+                            "include":"$base"
+                        }
+                    ]
+               }
+            ]
+        },
+        "parens":{
+            "name":"meta.parens.oil",
+            "begin":"\\(",
+            "beginCaptures":{
+                "0":{
+                    "name":"punctuation.section.parens.begin.bracket.round.oil"
+                }
+            },
+            "end":"\\)",
+            "endCaptures":{
+                "0":{
+                    "name":"punctuation.section.parens.end.bracket.round.oil"
+                }
+            },
+            "patterns":[
+                {
+                    "include":"$base"
+                }
+            ]
+        },
+        "operators": {
+            "patterns": [
+                {
+                    "match": "&|\\||\\^|~",
+                    "name": "keyword.operator.oil"
+                },
+                {
+                    "match": "=",
+                    "name": "keyword.operator.assignment.oil"
+                },
+                {
+                    "match": "%|\\*|/|-|\\+",
+                    "name": "keyword.operator.oil"
+                }
+            ]
+        },
+        "strings": {
+            "patterns": [
+                {
+                    "begin": "\"",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.oil"
+                        }
+                    },
+                    "end": "\"",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.oil"
+                        }
+                    },
+                    "name": "string.quoted.double.oil",
+                    "patterns": [
+                        {
+                            "include": "#string_escaped_char"
+                        },
+                        {
+                            "include": "#string_placeholder"
+                        }
+                    ]
+                },
+                {
+                    "begin": "'",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.begin.oil"
+                        }
+                    },
+                    "end": "'",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.string.end.oil"
+                        }
+                    },
+                    "name": "string.quoted.single.oil",
+                    "patterns": [
+                        {
+                            "include": "#string_escaped_char"
+                        }
+                    ]
+                }
+            ]
+        },
+        "string_escaped_char": {
+            "patterns": [
+                {
+                    "match": "(?x)\\\\ (\n\\\\\t\t\t |\n[abefnprtv'\"?]   |\n[0-3]\\d{,2}\t |\n[4-7]\\d?\t\t|\nx[a-fA-F0-9]{,2} |\nu[a-fA-F0-9]{,4} |\nU[a-fA-F0-9]{,8} )",
+                    "name": "constant.character.escape.oil"
+                },
+                {
+                    "match": "\\\\.",
+                    "name": "invalid.illegal.unknown-escape.oil"
+                }
+            ]
+        },
+        "string_placeholder": {
+            "patterns": [
+                {
+                    "match": "(?x) %\n(\\d+\\$)?\t\t\t\t\t\t   # field (argument #)\n[#0\\- +']*\t\t\t\t\t\t  # flags\n[,;:_]?\t\t\t\t\t\t\t  # separator character (AltiVec)\n((-?\\d+)|\\*(-?\\d+\\$)?)?\t\t  # minimum field width\n(\\.((-?\\d+)|\\*(-?\\d+\\$)?)?)?\t# precision\n(hh|h|ll|l|j|t|z|q|L|vh|vl|v|hv|hl)? # length modifier\n[diouxXDOUeEfFgGaACcSspn%]\t\t   # conversion type",
+                    "name": "constant.other.placeholder.oil"
+                },
+                {
+                    "match": "(%)(?!\"\\s*(PRI|SCN))",
+                    "captures": {
+                        "1": {
+                            "name": "invalid.illegal.placeholder.oil"
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

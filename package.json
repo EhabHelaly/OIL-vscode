@@ -1,0 +1,53 @@
+{
+	"name": "oil",
+	"displayName": "%displayName%",
+	"description": "%description%",
+	"version": "1.0.0",
+	"publisher": "EhabHelaly",
+	"license": "GPLv3",
+	"engines": {
+		"vscode": "*"
+	},
+	"icon": "images/OIL-icon.png",
+	"categories": [
+		"Programming Languages"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/EhabHelaly/OIL-vscode.git"
+	},
+	"keywords": [
+		"OIL",
+		"OSEK",
+		"AUTOSAR",
+		"chx",
+		"tpl",
+		"oil",
+		"tpx",
+		"obx",
+		"stx"
+	],
+	"contributes": {
+		"languages": [
+			{
+				"id": "OIL",
+				"extensions": [
+					".chx",
+					".tpl",
+					".oil",
+					".tpx",
+					".obx",
+					".stx"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "OIL",
+				"scopeName": "source.oil",
+				"path": "./syntaxes/oil.tmLanguage.json"
+			}
+		]
+	}
+}
