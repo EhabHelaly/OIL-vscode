@@ -12,5 +12,5 @@ it supports file extensions:
 you can download OIL documentation [here](http://www.irisa.fr/alf/downloads/puaut/TPNXT/images/oil25.pdf)
 
 ## Preview
-![Image](https://github.com/EhabHelaly/OIL-vscode/blob/master/images/SS_1.jpg)
+<img src="https://raw.githubusercontent.com/EhabHelaly/OIL-vscode/master/images/SS_1.jpg">
 
